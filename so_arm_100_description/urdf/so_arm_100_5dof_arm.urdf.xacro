@@ -51,8 +51,8 @@ For more information, please see http://wiki.ros.org/sw_urdf_exporter
         <mesh
           filename="${meshes_file_directory}/Base.STL" />
       </geometry>
-      <material name="brightyellow" >
-        <color rgba="1.0 0.9921568627450981 0.00392156862745098 1.0" />
+      <material name="brightyellow">
+        <color rgba="1.0 1.0 1.0 1.0" />
       </material>
     </visual>
     <collision>
@@ -90,8 +90,8 @@ For more information, please see http://wiki.ros.org/sw_urdf_exporter
         <mesh
           filename="${meshes_file_directory}/Shoulder_Rotation_Pitch.STL" />
       </geometry>
-      <material name="brightyellow" >
-        <color rgba="1.0 0.9921568627450981 0.00392156862745098 1.0" />
+      <material name="brightyellow">
+        <color rgba="1.0 1.0 1.0 1.0" />
       </material>
     </visual>
     <collision>
@@ -142,8 +142,8 @@ For more information, please see http://wiki.ros.org/sw_urdf_exporter
         <mesh
           filename="${meshes_file_directory}/Upper_Arm.STL" />
       </geometry>
-      <material name="brightyellow" >
-        <color rgba="1.0 0.9921568627450981 0.00392156862745098 1.0" />
+      <material name="brightyellow">
+        <color rgba="1.0 1.0 1.0 1.0" />
       </material>
     </visual>
     <collision>
@@ -194,8 +194,8 @@ For more information, please see http://wiki.ros.org/sw_urdf_exporter
         <mesh
           filename="${meshes_file_directory}/Lower_Arm.STL" />
       </geometry>
-      <material name="brightyellow" >
-        <color rgba="1.0 0.9921568627450981 0.00392156862745098 1.0" />
+      <material name="brightyellow">
+        <color rgba="1.0 1.0 1.0 1.0" />
       </material>
     </visual>
     <collision>
@@ -246,8 +246,8 @@ For more information, please see http://wiki.ros.org/sw_urdf_exporter
         <mesh
           filename="${meshes_file_directory}/Wrist_Pitch_Roll.STL" />
       </geometry>
-      <material name="brightyellow" >
-        <color rgba="1.0 0.9921568627450981 0.00392156862745098 1.0" />
+      <material name="brightyellow">
+        <color rgba="1.0 1.0 1.0 1.0" />
       </material>
     </visual>
     <collision>
@@ -298,8 +298,8 @@ For more information, please see http://wiki.ros.org/sw_urdf_exporter
         <mesh
           filename="${meshes_file_directory}/Fixed_Gripper.STL" />
       </geometry>
-      <material name="brightyellow" >
-        <color rgba="1.0 0.9921568627450981 0.00392156862745098 1.0" />
+      <material name="brightyellow">
+        <color rgba="1.0 1.0 1.0 1.0" />
       </material>
     </visual>
     <collision>
@@ -350,8 +350,8 @@ For more information, please see http://wiki.ros.org/sw_urdf_exporter
         <mesh
           filename="${meshes_file_directory}/Moving_Jaw.STL" />
       </geometry>
-      <material name="brightyellow" >
-        <color rgba="1.0 0.9921568627450981 0.00392156862745098 1.0" />
+      <material name="brightyellow">
+        <color rgba="1.0 1.0 1.0 1.0" />
       </material>
     </visual>
     <collision>
@@ -385,8 +385,8 @@ For more information, please see http://wiki.ros.org/sw_urdf_exporter
       <geometry>
         <box size="0.01 0.01 0.01" />
       </geometry>
-      <material name="red">
-        <color rgba="1.0 0.0 0.0 1"/>
+      <material name="brightyellow">
+        <color rgba="1.0 1.0 1.0 1.0" />
       </material>
     </visual>
   </link>
