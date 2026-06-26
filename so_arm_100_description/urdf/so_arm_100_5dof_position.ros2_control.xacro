@@ -38,7 +38,9 @@
             <param name="joint_states_topic">robot_joint_states</param>
           </xacro:if>
           <xacro:unless value="${use_topic_hardware_interface}">
-            <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+            <!-- <plugin>gz_ros2_control/GazeboSimSystem</plugin> -->
+            <plugin>mujoco_ros2_control/MujocoSystemInterface</plugin>
+            <param name="mujoco_model">/home/deviant/so101_moveit_ws/src/so101_mujoco/scene.xml</param>
           </xacro:unless>
         </xacro:if>
         <xacro:unless value="${use_sim}">

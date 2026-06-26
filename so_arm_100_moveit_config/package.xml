@@ -6,18 +6,10 @@
   <description>
      This package provides ROS2 support for the SO-100 robot arm, available in 5-DOF configuration. generated package with all the configuration and launch files for using the so_100_arm with the MoveIt Motion Planning Framework
   </description>
-  <maintainer email="bruk@signalbotics.com">Bruk Gebregziabher</maintainer>
-  <maintainer email="rhys.mainwaring@me.com">Rhys Mainwaring</maintainer>
+  <maintainer email="adityadevsingh16@gmail.com">Aditya Dev Singh</maintainer>
+  <maintainer email="adityadevsingh16@gmail.com">Aditya Dev Singh</maintainer>
 
   <license>Apache 2.0</license>
-
-  <url type="website">http://moveit.ros.org/</url>
-  <url type="bugtracker">https://github.com/moveit/moveit2/issues</url>
-  <url type="repository">https://github.com/moveit/moveit2</url>
-
-  <author email="bruk@signalbotics.com">Bruk Gebregziabher</author>
-  <author email="rhys.mainwaring@me.com">Rhys Mainwaring</author>
-
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <exec_depend>moveit_kinematics</exec_depend>
