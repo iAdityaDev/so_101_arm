@@ -31,10 +31,10 @@
     <default class="so_arm100">
       <joint frictionloss="0.1" armature="0.1"/>
       <position kp="50" dampratio="1" forcerange="-3.5 3.5"/>
-      <default class="Rotation">
+      <default class="Shoulder_Rotation">
         <joint axis="0 -1 0" range="-1.96 1.96"/>
       </default>
-      <default class="Pitch">
+      <default class="Shoulder_Pitch">
         <joint axis="1 0 0" range="-1.745 1.745"/>
       </default>
       <default class="Elbow">
@@ -72,20 +72,23 @@
       <body name="Rotation_Pitch" pos="0 -0.0452 0.0165" quat="0.707105 0.707108 0 0">
         <inertial pos="-9.07886e-05 0.0590972 0.031089" quat="0.363978 0.441169 -0.623108 0.533504" mass="0.119226"
           diaginertia="5.94278e-05 5.89975e-05 3.13712e-05"/>
-        <joint name="Rotation" class="Rotation"/>
+
+        <joint name="Shoulder_Rotation" class="Shoulder_Rotation"/>
         <geom type="mesh" mesh="Rotation_Pitch" class="visual"/>
         <geom type="mesh" mesh="Rotation_Pitch_Motor" class="motor_visual"/>
         <geom type="mesh" mesh="Rotation_Pitch" class="collision"/>
         <body name="Upper_Arm" pos="0 0.1025 0.0306" euler="0 0 0">
           <inertial pos="-1.72052e-05 0.0701802 0.00310545" quat="0.50104 0.498994 -0.493562 0.50632" mass="0.162409"
             diaginertia="0.000213312 0.000167164 7.01522e-05"/>
-          <joint name="Pitch" class="Pitch"/>
+            
+          <joint name="Shoulder_Pitch" class="Shoulder_Pitch"/>
           <geom type="mesh" mesh="Upper_Arm" class="visual"/>
           <geom type="mesh" mesh="Upper_Arm_Motor" class="motor_visual"/>
           <geom type="mesh" mesh="Upper_Arm" class="collision"/>
           <body name="Lower_Arm" pos="0 0.11257 0.028" euler="0 0 0">
             <inertial pos="-0.00339604 0.00137796 0.0768007" quat="0.701995 0.0787996 0.0645626 0.704859"
               mass="0.147968" diaginertia="0.000138803 0.000107748 4.84242e-05"/>
+
             <joint name="Elbow" class="Elbow"/>
             <geom type="mesh" mesh="Lower_Arm" class="visual"/>
             <geom type="mesh" mesh="Lower_Arm_Motor" class="motor_visual"/>
@@ -100,6 +103,7 @@
               <body name="Fixed_Jaw" pos="0 -0.0601 0" euler="0 1.57079 0">
                 <inertial pos="0.00552377 -0.0280167 0.000483583" quat="0.41836 0.620891 -0.350644 0.562599"
                   mass="0.0929859" diaginertia="5.03136e-05 4.64098e-05 2.72961e-05"/>
+
                 <joint name="Wrist_Roll" class="Wrist_Roll"/>
                 <geom type="mesh" mesh="Fixed_Jaw" class="visual"/>
                 <geom type="mesh" mesh="Fixed_Jaw_Motor" class="motor_visual"/>
@@ -134,9 +138,18 @@
     </body>
   </worldbody>
 
-  <actuator>
+  <!-- <actuator>
     <position class="Rotation" name="Shoulder_Rotation" joint="Rotation" inheritrange="1"/>
     <position class="Pitch" name="Shoulder_Pitch" joint="Pitch" inheritrange="1"/>
+    <position class="Elbow" name="Elbow" joint="Elbow" inheritrange="1"/>
+    <position class="Wrist_Pitch" name="Wrist_Pitch" joint="Wrist_Pitch" inheritrange="1"/>
+    <position class="Wrist_Roll" name="Wrist_Roll" joint="Wrist_Roll" inheritrange="1"/>
+    <position class="Jaw" name="Gripper" joint="Jaw" inheritrange="1"/>
+  </actuator> -->
+
+  <actuator>
+    <position class="Shoulder_Rotation" name="Shoulder_Rotation" joint="Shoulder_Rotation" inheritrange="1"/>
+    <position class="Shoulder_Pitch" name="Shoulder_Pitch" joint="Shoulder_Pitch" inheritrange="1"/>
     <position class="Elbow" name="Elbow" joint="Elbow" inheritrange="1"/>
     <position class="Wrist_Pitch" name="Wrist_Pitch" joint="Wrist_Pitch" inheritrange="1"/>
     <position class="Wrist_Roll" name="Wrist_Roll" joint="Wrist_Roll" inheritrange="1"/>
