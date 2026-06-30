@@ -7,7 +7,7 @@ controller_manager:
       type: joint_trajectory_controller/JointTrajectoryController
 
     gripper_controller:
-      type: parallel_gripper_action_controller/GripperActionController
+      type: joint_trajectory_controller/JointTrajectoryController
 
     arm_effort_controller:
       type: joint_trajectory_controller/JointTrajectoryController
@@ -40,7 +40,8 @@ arm_controller:
 
 gripper_controller:
   ros__parameters:
-    joint: Gripper
+    joints: 
+      - Gripper
     interface_name: position
     command_interfaces:
       - position

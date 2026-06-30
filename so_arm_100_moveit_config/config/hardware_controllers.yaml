@@ -12,10 +12,8 @@ controller_manager:
       type: joint_trajectory_controller/JointTrajectoryController
 
     gripper_effort_controller:
-      type: position_controllers/JointGroupPositionController
+      type: position_controllers/JointGroupEffortController
 
-    effort_controller:
-      type: effort_controllers/JointGroupEffortController
 
     joint_state_broadcaster:
       type: joint_state_broadcaster/JointStateBroadcaster
@@ -94,13 +92,3 @@ gripper_effort_controller:
       - velocity
     gains:
       Gripper: {p: 75.0, i: 0.0, d: 1.0, u_clamp_max: 100.0, u_clamp_min: -100.0}
-
-effort_controller:
-  ros__parameters:
-    joints:
-      - Shoulder_Rotation
-      - Shoulder_Pitch
-      - Elbow
-      - Wrist_Pitch
-      - Wrist_Roll
-      - Gripper

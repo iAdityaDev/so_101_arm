@@ -25,15 +25,27 @@ arm_controller:
     state_interfaces:
       - position
       - velocity
+      - effort
     state_publish_rate: 50.0
     action_monitor_rate: 20.0
     constraints:
       stopped_velocity_tolerance: 0.01
       goal_time: 0.0
-      joint_trajectory_controller:
-        joint1:
-          trajectory: 0.05
-          goal: 0.03
+      # Shoulder_Rotation:
+      #   trajectory: 0.05
+      #   goal: 0.03
+      # Shoulder_Pitch:
+      #   trajectory: 0.05
+      #   goal: 0.03
+      # Elbow:
+      #   trajectory: 0.05
+      #   goal: 0.03
+      # Wrist_Pitch:
+      #   trajectory: 0.05
+      #   goal: 0.03
+      # Wrist_Roll:
+      #   trajectory: 0.05
+      #   goal: 0.03
 
 gripper_controller:
   ros__parameters:
@@ -44,3 +56,4 @@ gripper_controller:
     state_interfaces:
       - position
       - velocity
+      - effort

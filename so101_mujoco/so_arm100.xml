@@ -46,7 +46,7 @@
       <default class="Wrist_Roll">
         <joint axis="0 1 0" range="-2.75 2.75"/>
       </default>
-      <default class="Jaw">
+      <default class="Gripper">
         <joint axis="0 0 1" range="-0.179 1.571"/>
       </default>
       <default class="visual">
@@ -116,7 +116,7 @@
                 <body name="Moving_Jaw" pos="-0.0202 -0.0244 0" quat="1.34924e-11 -3.67321e-06 1 -3.67321e-06">
                   <inertial pos="-0.00161745 -0.0303473 0.000449646" quat="0.696562 0.716737 -0.0239844 -0.0227026"
                     mass="0.0202444" diaginertia="1.11265e-05 8.99651e-06 2.99548e-06"/>
-                  <joint name="Jaw" class="Jaw"/>
+                  <joint name="Gripper" class="Gripper"/>
                   <geom type="mesh" mesh="Moving_Jaw" class="visual"/>
                   <geom type="mesh" mesh="Moving_Jaw_Collision_1" class="collision"/>
                   <geom type="mesh" mesh="Moving_Jaw_Collision_2" class="collision"/>
@@ -153,7 +153,7 @@
     <position class="Elbow" name="Elbow" joint="Elbow" inheritrange="1"/>
     <position class="Wrist_Pitch" name="Wrist_Pitch" joint="Wrist_Pitch" inheritrange="1"/>
     <position class="Wrist_Roll" name="Wrist_Roll" joint="Wrist_Roll" inheritrange="1"/>
-    <position class="Jaw" name="Gripper" joint="Jaw" inheritrange="1"/>
+    <position class="Gripper" name="Gripper" joint="Gripper" inheritrange="1"/>
   </actuator>
 
   <contact>

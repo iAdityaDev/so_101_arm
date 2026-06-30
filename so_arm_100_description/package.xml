@@ -6,10 +6,9 @@
 
   <description>SO-100 description ROS 2 package.</description>
 
-  <maintainer email="bruk@signalbotics.com">Bruk Gebregziabher</maintainer>
-  <maintainer email="rhys.mainwaring@me.com">Rhys Mainwaring</maintainer>
+  <maintainer email="adityadevsingh16@gmail.com">Aditya Dev Singh</maintainer>
+  <maintainer email="adityadevsingh16@gmail.com">Aditya Dev Singh</maintainer>
   <license>Apache 2.0</license>
-  <url type="repository">https://github.com/brukg/SO-100-arm</url>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
