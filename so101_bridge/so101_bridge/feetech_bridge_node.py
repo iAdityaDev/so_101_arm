@@ -67,14 +67,14 @@ from lerobot.robots.so_follower.so_follower import SO101Follower
 # Feetech "Acceleration" register (0-254). Lower = gentler ramp up/down.
 # lerobot's own default is 254 (fast). Leave at 254 unless you also want a
 # slower ramp-up/ramp-down, separate from the top speed cap below.
-SERVO_ACCELERATION = 254
+SERVO_ACCELERATION = 150
 
 # Feetech "Goal_Velocity" register -- a hard speed cap enforced by the servo
 # itself, regardless of where a command tells it to go. 0 = unlimited (leaves
 # whatever's currently set on the motor untouched). Start LOW (e.g. 30) and
 # increase gradually while watching the real arm move -- see the safety
 # calibration steps from earlier in this chat.
-SERVO_GOAL_VELOCITY = 200
+SERVO_GOAL_VELOCITY = 150
 
 # ============================================================
 
