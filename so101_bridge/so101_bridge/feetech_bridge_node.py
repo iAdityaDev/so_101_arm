@@ -59,6 +59,25 @@ from sensor_msgs.msg import JointState
 from lerobot.robots.so_follower.config_so_follower import SO101FollowerConfig
 from lerobot.robots.so_follower.so_follower import SO101Follower
 
+# ============================================================
+# EDIT THESE DIRECTLY, then rebuild (colcon build) to apply.
+# No ROS2 parameters needed for these two -- just change the number and rebuild.
+# ============================================================
+
+# Feetech "Acceleration" register (0-254). Lower = gentler ramp up/down.
+# lerobot's own default is 254 (fast). Leave at 254 unless you also want a
+# slower ramp-up/ramp-down, separate from the top speed cap below.
+SERVO_ACCELERATION = 254
+
+# Feetech "Goal_Velocity" register -- a hard speed cap enforced by the servo
+# itself, regardless of where a command tells it to go. 0 = unlimited (leaves
+# whatever's currently set on the motor untouched). Start LOW (e.g. 30) and
+# increase gradually while watching the real arm move -- see the safety
+# calibration steps from earlier in this chat.
+SERVO_GOAL_VELOCITY = 200
+
+# ============================================================
+
 
 class FeetechBridgeNode(Node):
     def __init__(self):
@@ -125,6 +144,23 @@ class FeetechBridgeNode(Node):
         self._robot.connect(calibrate=False)
         motor_names = list(self._robot.bus.motors.keys())
         self.get_logger().info(f"Connected. Motors under control: {motor_names}")
+
+        # Acceleration: lerobot's own configure() already sets this to 254 (near-max)
+        # for every motor -- only re-write it if SERVO_ACCELERATION above is different.
+        if SERVO_ACCELERATION != 254:
+            for motor in motor_names:
+                self._robot.bus.write("Acceleration", motor, SERVO_ACCELERATION)
+            self.get_logger().info(f"Set Acceleration={SERVO_ACCELERATION} on all motors.")
+
+        # Goal_Velocity: lerobot never writes this for arm joints, so it's whatever
+        # was last left on the motor (0 = "leave it alone"). Only applied if
+        # SERVO_GOAL_VELOCITY above is > 0.
+        if SERVO_GOAL_VELOCITY > 0:
+            for motor in motor_names:
+                self._robot.bus.write("Goal_Velocity", motor, SERVO_GOAL_VELOCITY)
+            self.get_logger().info(
+                f"Set Goal_Velocity={SERVO_GOAL_VELOCITY} on all motors (lower = slower)."
+            )
 
         self._lock = threading.Lock()
 

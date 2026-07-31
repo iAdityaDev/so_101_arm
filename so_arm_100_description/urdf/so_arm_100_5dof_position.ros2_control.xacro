@@ -58,8 +58,8 @@
 
       <joint name="${prefix}Shoulder_Rotation">
         <command_interface name="position">
-          <param name="min">-1.96</param>
-          <param name="max">1.96</param>
+          <param name="min">-1.8</param>
+          <param name="max">1.8</param>
           <xacro:if value="${initial_positions_file != ''}">
             <xacro:property name="joint_name" value="${prefix}Shoulder_Rotation"/>
             <param name="initial_value">${initial_positions[joint_name]}</param>
@@ -71,8 +71,8 @@
       </joint>
       <joint name="${prefix}Shoulder_Pitch">
         <command_interface name="position">
-          <param name="min">-1.745</param>
-          <param name="max">1.745</param>
+          <param name="min">-1.7</param>
+          <param name="max">1.7</param>
           <xacro:if value="${initial_positions_file != ''}">
             <xacro:property name="joint_name" value="${prefix}Shoulder_Pitch"/>
             <param name="initial_value">${initial_positions[joint_name]}</param>
