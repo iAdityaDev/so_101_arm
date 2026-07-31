@@ -19,6 +19,7 @@ from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 
 
+
 def generate_launch_description():
     port_arg = DeclareLaunchArgument(
         "port", default_value="/dev/ttyACM0", description="Serial port for the SO-101 follower arm"
