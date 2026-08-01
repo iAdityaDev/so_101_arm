@@ -77,6 +77,14 @@ SERVO_ACCELERATION = 150
 SERVO_GOAL_VELOCITY = 150
 
 # ============================================================
+# ===== FAKE JOINTS PATCH (START) =============================
+# Motors not physically installed/wired yet. Published as static 0.0 rad
+# in the states topic so downstream consumers (robot_state_publisher,
+# MoveIt, RViz, ros2_control state interfaces) don't choke on missing
+# joints. Delete this whole list (and its use in _on_timer, marked
+# below) once the real motors are connected and in `joint_name_map`.
+FAKE_JOINT_NAMES_URDF = ["Elbow", "Wrist_Pitch", "Wrist_Roll"]
+# ===== FAKE JOINTS PATCH (END) ================================
 
 
 class FeetechBridgeNode(Node):
@@ -221,6 +229,14 @@ class FeetechBridgeNode(Node):
             urdf_name = self._lerobot_to_urdf.get(lerobot_name, lerobot_name)
             msg.name.append(urdf_name)
             msg.position.append(math.radians(val_deg))
+
+        # ===== FAKE JOINTS PATCH (START) =====
+        # Append static 0.0 rad entries for motors not yet installed.
+        # Delete this block to stop publishing them.
+        for fake_name in FAKE_JOINT_NAMES_URDF:
+            msg.name.append(fake_name)
+            msg.position.append(0.0)
+        # ===== FAKE JOINTS PATCH (END) =====
 
         self._states_pub.publish(msg)
 
