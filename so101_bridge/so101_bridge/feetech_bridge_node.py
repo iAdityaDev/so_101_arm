@@ -48,7 +48,7 @@ Parameters:
             wrist_flex    -> Wrist_Pitch
             wrist_roll    -> Wrist_Roll
 """
-
+    
 import math
 import threading
 
@@ -74,7 +74,7 @@ SERVO_ACCELERATION = 150
 # whatever's currently set on the motor untouched). Start LOW (e.g. 30) and
 # increase gradually while watching the real arm move -- see the safety
 # calibration steps from earlier in this chat.
-SERVO_GOAL_VELOCITY = 150
+SERVO_GOAL_VELOCITY = 250
 
 # ============================================================
 # ===== FAKE JOINTS PATCH (START) =============================
