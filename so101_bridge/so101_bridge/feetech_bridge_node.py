@@ -83,7 +83,7 @@ SERVO_GOAL_VELOCITY = 150
 # MoveIt, RViz, ros2_control state interfaces) don't choke on missing
 # joints. Delete this whole list (and its use in _on_timer, marked
 # below) once the real motors are connected and in `joint_name_map`.
-FAKE_JOINT_NAMES_URDF = ["Elbow", "Wrist_Pitch", "Wrist_Roll"]
+FAKE_JOINT_NAMES_URDF = ["Elbow", "Wrist_Pitch", "Wrist_Roll","Gripper"]
 # ===== FAKE JOINTS PATCH (END) ================================
 
 
