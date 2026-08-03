@@ -1,54 +1,4 @@
 #!/usr/bin/env python3
-"""
-feetech_bridge_node.py
-
-Bridges lerobot's SO101Follower (which wraps FeetechMotorsBus) to plain ROS2
-topics, so a ros2_control hardware interface (C++, non-Python) can drive the
-real SO-101 arm without re-implementing motor communication or the tick<->degree
-calibration math -- both are reused as-is from your installed lerobot package.
-
-This node OWNS the serial connection to the arm. Only one process may hold the
-port open at a time -- do not run lerobot-calibrate, lerobot-teleoperate, or any
-other lerobot script against the same --robot.port while this node is running.
-
-Topics:
-    Subscribes  <commands_topic>  sensor_msgs/JointState   position in RADIANS
-    Publishes   <states_topic>    sensor_msgs/JointState   position in RADIANS
-
-Messages are matched by joint `name`, not by array index, so the ordering used
-by your URDF/ros2_control does not need to match the ordering lerobot uses
-internally.
-
-Your URDF joint names very likely do NOT match lerobot's internal motor names
-(e.g. your URDF might use "Shoulder_Rotation" while lerobot calls that motor
-"shoulder_pan"). Rather than rename anything in your URDF/MoveIt/SRDF, set
-`joint_name_map` below to translate between the two -- the default already
-matches the standard so_arm_100 5-DOF naming convention.
-
-Parameters:
-    port                     (string)  default: /dev/ttyACM0
-    robot_id                 (string)  default: my_awesome_follower_arm
-    commands_topic           (string)  default: /so101/hardware_commands
-    states_topic             (string)  default: /so101/hardware_states
-    publish_rate_hz           (double)  default: 100.0
-    max_relative_target_deg  (double)  default: 0.0  (0.0 = disabled)
-        If > 0, caps how far the arm is allowed to move per command relative to
-        its CURRENT position, in degrees. This is a per-cycle safety clamp --
-        strongly recommended while validating the pipeline for the first time,
-        e.g. start with 3-5 degrees so a bad MoveIt trajectory can't snap the
-        arm to a wrong position in one step.
-    joint_name_map           (string array)
-        Each entry is "lerobot_motor_name:urdf_joint_name". Any lerobot motor
-        not listed here is assumed to already share its name with the URDF.
-        Default maps the 5 motors you currently have to the so_arm_100 naming
-        convention (no gripper entry yet, since motor 6 isn't installed):
-            shoulder_pan  -> Shoulder_Rotation
-            shoulder_lift -> Shoulder_Pitch
-            elbow_flex    -> Elbow
-            wrist_flex    -> Wrist_Pitch
-            wrist_roll    -> Wrist_Roll
-"""
-    
 import math
 import threading
 
@@ -59,33 +9,10 @@ from sensor_msgs.msg import JointState
 from lerobot.robots.so_follower.config_so_follower import SO101FollowerConfig
 from lerobot.robots.so_follower.so_follower import SO101Follower
 
-# ============================================================
-# EDIT THESE DIRECTLY, then rebuild (colcon build) to apply.
-# No ROS2 parameters needed for these two -- just change the number and rebuild.
-# ============================================================
 
-# Feetech "Acceleration" register (0-254). Lower = gentler ramp up/down.
-# lerobot's own default is 254 (fast). Leave at 254 unless you also want a
-# slower ramp-up/ramp-down, separate from the top speed cap below.
 SERVO_ACCELERATION = 150
-
-# Feetech "Goal_Velocity" register -- a hard speed cap enforced by the servo
-# itself, regardless of where a command tells it to go. 0 = unlimited (leaves
-# whatever's currently set on the motor untouched). Start LOW (e.g. 30) and
-# increase gradually while watching the real arm move -- see the safety
-# calibration steps from earlier in this chat.
 SERVO_GOAL_VELOCITY = 250
-
-# ============================================================
-# ===== FAKE JOINTS PATCH (START) =============================
-# Motors not physically installed/wired yet. Published as static 0.0 rad
-# in the states topic so downstream consumers (robot_state_publisher,
-# MoveIt, RViz, ros2_control state interfaces) don't choke on missing
-# joints. Delete this whole list (and its use in _on_timer, marked
-# below) once the real motors are connected and in `joint_name_map`.
 FAKE_JOINT_NAMES_URDF = ["Elbow", "Wrist_Pitch", "Wrist_Roll","Gripper"]
-# ===== FAKE JOINTS PATCH (END) ================================
-
 
 class FeetechBridgeNode(Node):
     def __init__(self):
@@ -130,11 +57,7 @@ class FeetechBridgeNode(Node):
 
         max_relative_target = max_rel_deg if max_rel_deg > 0.0 else None
         if max_relative_target is None:
-            self.get_logger().warn(
-                "max_relative_target_deg=0.0 (disabled). Commands will be sent to the "
-                "arm with NO per-cycle safety clamp. Consider setting this to a small "
-                "value (e.g. 5.0) until you've fully validated the pipeline."
-            )
+            pass
 
         cfg = SO101FollowerConfig(
             port=port,
@@ -146,23 +69,16 @@ class FeetechBridgeNode(Node):
         self._robot = SO101Follower(cfg)
 
         self.get_logger().info(f"Connecting to SO-101 follower on '{port}' (id='{robot_id}')...")
-        # calibrate=False requires a calibration file for this id to already exist
-        # on disk. It never blocks on input() as long as is_calibrated is True,
-        # which is the state you're in after a successful lerobot-calibrate run.
         self._robot.connect(calibrate=False)
         motor_names = list(self._robot.bus.motors.keys())
         self.get_logger().info(f"Connected. Motors under control: {motor_names}")
 
-        # Acceleration: lerobot's own configure() already sets this to 254 (near-max)
-        # for every motor -- only re-write it if SERVO_ACCELERATION above is different.
+
         if SERVO_ACCELERATION != 254:
             for motor in motor_names:
                 self._robot.bus.write("Acceleration", motor, SERVO_ACCELERATION)
             self.get_logger().info(f"Set Acceleration={SERVO_ACCELERATION} on all motors.")
 
-        # Goal_Velocity: lerobot never writes this for arm joints, so it's whatever
-        # was last left on the motor (0 = "leave it alone"). Only applied if
-        # SERVO_GOAL_VELOCITY above is > 0.
         if SERVO_GOAL_VELOCITY > 0:
             for motor in motor_names:
                 self._robot.bus.write("Goal_Velocity", motor, SERVO_GOAL_VELOCITY)
@@ -209,7 +125,7 @@ class FeetechBridgeNode(Node):
         with self._lock:
             try:
                 self._robot.send_action(action)
-            except Exception as exc:  # noqa: BLE001 - surface any hardware error, keep node alive
+            except Exception as exc:
                 self.get_logger().error(f"send_action failed: {exc}")
 
     def _on_timer(self) -> None:
@@ -230,21 +146,19 @@ class FeetechBridgeNode(Node):
             msg.name.append(urdf_name)
             msg.position.append(math.radians(val_deg))
 
-        # ===== FAKE JOINTS PATCH (START) =====
-        # Append static 0.0 rad entries for motors not yet installed.
-        # Delete this block to stop publishing them.
+####################################################################$
         for fake_name in FAKE_JOINT_NAMES_URDF:
             msg.name.append(fake_name)
             msg.position.append(0.0)
-        # ===== FAKE JOINTS PATCH (END) =====
+###############################################################
 
         self._states_pub.publish(msg)
 
     def shutdown(self) -> None:
-        self.get_logger().info("Disconnecting from SO-101 follower (torque will be disabled)...")
+        self.get_logger().info("Disconnecting SO-101")
         try:
             self._robot.disconnect()
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc: 
             self.get_logger().error(f"Error during disconnect: {exc}")
 
 
