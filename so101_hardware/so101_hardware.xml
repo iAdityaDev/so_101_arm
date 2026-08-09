@@ -5,8 +5,7 @@
     <description>
       Real-hardware SO-101 SystemInterface. Bridges to the real Feetech motors
       via the feetech_bridge_node (ROS2 topics), which wraps lerobot's
-      SO101Follower / FeetechMotorsBus. Drop-in replacement for the MuJoCo
-      SystemInterface plugin -- same controllers, same MoveIt config.
+      SO101Follower / FeetechMotorsBus. 
     </description>
   </class>
 </library>
