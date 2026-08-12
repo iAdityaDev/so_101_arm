@@ -8,10 +8,10 @@
 #include <thread>
 #include <vector>
 
-#include "hardware_interface/handle.hpp"                 // export_state_interface and the command interface
-#include "hardware_interface/hardware_info.hpp"          // 
+#include "hardware_interface/handle.hpp"
+#include "hardware_interface/hardware_info.hpp"
 #include "hardware_interface/system_interface.hpp"
-#include "hardware_interface/types/hardware_interface_return_values.hpp"     // return tyoes for the read() and write() ok or ERroRs
+#include "hardware_interface/types/hardware_interface_return_values.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_lifecycle/state.hpp"
 #include "sensor_msgs/msg/joint_state.hpp"
@@ -23,7 +23,6 @@ class SO101HardwareInterface : public hardware_interface::SystemInterface
 {
 public:
   hardware_interface::CallbackReturn on_init(
-    
     const hardware_interface::HardwareInfo & info) override;
 
   std::vector<hardware_interface::StateInterface> export_state_interfaces() override;
@@ -43,13 +42,14 @@ private:
   void on_bridge_state(const sensor_msgs::msg::JointState::SharedPtr msg);
 
   std::vector<std::string> joint_names_;
-  std::vector<double> hw_positions_;   
+  std::vector<double> hw_positions_;  
   std::vector<double> hw_commands_; 
 
   std::mutex state_mutex_;
   std::map<std::string, double> latest_state_by_name_;
   bool received_first_state_{false};
 
+  // Internal ROS2 node + background executor thread talking to the bridge.
   rclcpp::Node::SharedPtr node_;
   rclcpp::Publisher<sensor_msgs::msg::JointState>::SharedPtr commands_pub_;
   rclcpp::Subscription<sensor_msgs::msg::JointState>::SharedPtr states_sub_;
@@ -60,6 +60,6 @@ private:
   std::string states_topic_{"/so101/hardware_states"};
 };
 
-}  
+}  // namespace so101_hardware
 
-#endif  
+#endif  // SO101_HARDWARE__SO101_HARDWARE_INTERFACE_HPP_

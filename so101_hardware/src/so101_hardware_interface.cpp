@@ -117,6 +117,7 @@ CallbackReturn SO101HardwareInterface::on_activate(const rclcpp_lifecycle::State
       RCLCPP_FATAL(
         node_->get_logger(),
         "Timed out waiting for the feetech_bridge_node on topic '%s'. "
+        "Is it running? Is the port open? Refusing to activate.",
         states_topic_.c_str());
       return CallbackReturn::ERROR;
     }
@@ -171,6 +172,8 @@ return_type SO101HardwareInterface::read(
     if (it != latest_state_by_name_.end()) {
       hw_positions_[i] = it->second;
     }
+    // If not found (yet), keep the previous cached value rather than writing NaN,
+    // so a single dropped message doesn't fault the controller.
   }
   return return_type::OK;
 }
