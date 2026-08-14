@@ -13,21 +13,25 @@ hardware.
 
 ### `main` — simulation
 
+https://github.com/user-attachments/assets/d9211cfa-1904-4dcd-8ea7-1023dfa931cb
+
+
 ```bash
 mkdir -p so_100_ws/src && cd so_100_ws/src
-git clone
+git clone https://github.com/iAdityaDev/so_101_arm.git .
 cd ..
 colcon build --symlink-install
 ros2 launch so101_mujoco mujoco.launch.py
 ```
 Brings up MuJoCo, `robot_state_publisher`, `move_group`, RViz, and spawns
 `joint_state_broadcaster` + `arm_controller` + `gripper_controller`
-automatically — single command, nothing else to run.
+automatically
 
 ---
 
 ## `so101_hardware` branch — real hardware bridge
 
+https://github.com/user-attachments/assets/4afae117-0115-45f9-b2b0-257acea641ea
 
 ```bash
 git checkout so101_hardware   # for everything below this point
