@@ -1,10 +1,34 @@
-# SO-101 Real Hardware Bridge for MoveIt / ros2_control
+# SO-101 Arm — MoveIt2 Control
 
-Drives a real SO-ARM100/SO-101 Feetech-servo arm through MoveIt2 by bridging
-`ros2_control` to [lerobot](https://github.com/huggingface/lerobot)'s
-`SO101Follower`, instead of a native serial driver. Drop-in replacement for
-a MuJoCo/mock hardware plugin — MoveIt, SRDF, and controllers config are
-unchanged.
+MoveIt2 control of a SO-ARM100/SO-101 arm, in simulation and on real
+hardware.
+
+## Branches
+
+| Branch | What it runs |
+|---|---|
+| `main` | MoveIt2 + MuJoCo simulation |
+| `so101_hardware` | Real hardware, via a lerobot-backed `ros2_control` bridge (this doc) |
+
+```bash
+git checkout so101_hardware   # for everything below this point
+```
+
+### `main` — simulation
+
+```bash
+ros2 launch <TODO: fill in your sim launch package/file>
+```
+
+---
+
+## `so101_hardware` branch — real hardware bridge
+
+Drives the real arm through MoveIt2 by bridging `ros2_control` to
+[lerobot](https://github.com/huggingface/lerobot)'s `SO101Follower`, instead
+of a native serial driver. Drop-in replacement for the `main` branch's
+MuJoCo plugin — MoveIt, SRDF, and controllers config are unchanged between
+branches.
 
 **Hardware:** 5 motors installed (`shoulder_pan`, `shoulder_lift`,
 `elbow_flex`, `wrist_flex`, `wrist_roll`). Gripper (motor 6) not installed.
