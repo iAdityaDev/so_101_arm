@@ -8,22 +8,24 @@ hardware.
 | Branch | What it runs |
 |---|---|
 | `main` | MoveIt2 + MuJoCo simulation |
-| `so101_hardware` | Real hardware, via a lerobot-backed `ros2_control` bridge  |
-
-
-### `main` — simulation
-
-```bash
-ros2 launch <TODO: fill in your sim launch package/file>
-```
-
----
-
-## `so101_hardware` branch — real hardware bridge
+| `so101_hardware` | Real hardware, via a lerobot-backed `ros2_control` bridge (this doc) |
 
 ```bash
 git checkout so101_hardware   # for everything below this point
 ```
+
+### `main` — simulation
+
+```bash
+ros2 launch so101_mujoco mujoco.launch.py
+```
+Brings up MuJoCo, `robot_state_publisher`, `move_group`, RViz, and spawns
+`joint_state_broadcaster` + `arm_controller` + `gripper_controller`
+automatically — single command, nothing else to run.
+
+---
+
+## `so101_hardware` branch — real hardware bridge
 
 Drives the real arm through MoveIt2 by bridging `ros2_control` to
 [lerobot](https://github.com/huggingface/lerobot)'s `SO101Follower`, instead
@@ -65,8 +67,10 @@ so101_bridge/{package.xml,setup.py,setup.cfg,resource/so101_bridge,so101_bridge/
 so101_hardware/{CMakeLists.txt,package.xml,so101_hardware.xml,include/...,src/...}
 ```
 
-URDF/xacro, MoveIt config, `controllers.yaml`, SRDF live in your separate
-`so_arm_100_description` / `so_arm_100_moveit_config` packages.
+URDF/xacro, MoveIt config, `controllers.yaml`, SRDF live in `so_arm_100_description`
+and `so_arm_100_moveit_config` (both present on every branch — only the
+`<ros2_control>` hardware plugin block differs between `main` and
+`so101_hardware`).
 
 ## Prerequisites
 
@@ -152,13 +156,13 @@ match the link URDF's real `<limit>` values.
 **1 — bridge:**
 ```bash
 ros2 run so101_bridge feetech_bridge_node --ros-args \
-  -p port:=/dev/ttyACM0 -p robot_id:=<id> -p max_relative_target_deg:=5.0
+  -p port:=/dev/ttyACM0 -p robot_id:=my_awesome_follower_arm -p max_relative_target_deg:=5.0
 ```
 
 **2 — robot_state_publisher:**
 ```bash
 ros2 run robot_state_publisher robot_state_publisher --ros-args \
-  -p robot_description:="$(xacro /path/to/top_level.urdf.xacro)"
+  -p robot_description:="$(xacro $(ros2 pkg prefix so_arm_100_moveit_config)/share/so_arm_100_moveit_config/config/so_arm_100.urdf.xacro use_sim:=false use_fake_hardware:=false)"
 ```
 
 **3 — controller_manager** (remap must be quoted — unquoted `~/...` gets
@@ -166,15 +170,19 @@ tilde-expanded by bash before ROS2 sees it, silently):
 ```bash
 ros2 run controller_manager ros2_control_node --ros-args \
   --remap '~/robot_description:=/robot_description' \
-  --params-file /path/to/controllers.yaml
+  --params-file $(ros2 pkg prefix so_arm_100_moveit_config)/share/so_arm_100_moveit_config/config/hardware_controllers.yaml
 ```
 
 **4 — controllers + MoveIt:**
 ```bash
 ros2 run controller_manager spawner joint_state_broadcaster
-ros2 run controller_manager spawner <arm_controller_name>
-ros2 launch <moveit_config_pkg> move_group.launch.py
+ros2 run controller_manager spawner arm_controller
+ros2 launch so_arm_100_moveit_config move_group.launch.py
 ```
+`arm_controller` (`joint_trajectory_controller`) covers all 5 real joints —
+`Shoulder_Rotation, Shoulder_Pitch, Elbow, Wrist_Pitch, Wrist_Roll`.
+`gripper_controller` also exists in `hardware_controllers.yaml`, unused
+until motor 6 is installed.
 
 ## Validation order
 
