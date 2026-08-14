@@ -30,7 +30,7 @@ automatically
 
 ## `so101_hardware` branch — real hardware bridge
 
-https://github.com/user-attachments/assets/4afae117-0115-45f9-b2b0-257acea641ea
+<video src="https://github.com/user-attachments/assets/4afae117-0115-45f9-b2b0-257acea641ea" width="480" controls></video>
 
 ```bash
 git checkout so101_hardware   # for everything below this point
