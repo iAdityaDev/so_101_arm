@@ -8,11 +8,8 @@ hardware.
 | Branch | What it runs |
 |---|---|
 | `main` | MoveIt2 + MuJoCo simulation |
-| `so101_hardware` | Real hardware, via a lerobot-backed `ros2_control` bridge (this doc) |
+| `so101_hardware` | Real hardware, via a lerobot-backed `ros2_control` bridge  |
 
-```bash
-git checkout so101_hardware   # for everything below this point
-```
 
 ### `main` — simulation
 
@@ -23,6 +20,10 @@ ros2 launch <TODO: fill in your sim launch package/file>
 ---
 
 ## `so101_hardware` branch — real hardware bridge
+
+```bash
+git checkout so101_hardware   # for everything below this point
+```
 
 Drives the real arm through MoveIt2 by bridging `ros2_control` to
 [lerobot](https://github.com/huggingface/lerobot)'s `SO101Follower`, instead
