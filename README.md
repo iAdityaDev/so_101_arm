@@ -118,7 +118,7 @@ it points at system Python instead of the venv.
 ```bash
 cd ~/so101_moveit_ws
 rosdep install --from-paths src --ignore-src -r -y
-colcon build --packages-select so101_bridge so101_hardware
+colcon build --symlink-install
 source install/setup.bash
 ```
 
@@ -147,8 +147,7 @@ ros2 run robot_state_publisher robot_state_publisher --ros-args \
   -p robot_description:="$(xacro $(ros2 pkg prefix so_arm_100_moveit_config)/share/so_arm_100_moveit_config/config/so_arm_100.urdf.xacro use_sim:=false use_fake_hardware:=false)"
 ```
 
-**3 — controller_manager** (remap must be quoted — unquoted `~/...` gets
-tilde-expanded by bash before ROS2 sees it, silently):
+**3 — controller_manager** 
 ```bash
 ros2 run controller_manager ros2_control_node --ros-args \
   --remap '~/robot_description:=/robot_description' \
