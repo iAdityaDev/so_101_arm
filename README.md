@@ -13,8 +13,7 @@ hardware.
 
 ### `main` — simulation
 
-https://github.com/user-attachments/assets/d9211cfa-1904-4dcd-8ea7-1023dfa931cb
-
+<video src="https://github.com/user-attachments/assets/d9211cfa-1904-4dcd-8ea7-1023dfa931cb" width="480" controls></video>
 
 ```bash
 mkdir -p so_100_ws/src && cd so_100_ws/src
