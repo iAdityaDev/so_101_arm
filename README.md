@@ -164,8 +164,7 @@ match the link URDF's real `<limit>` values.
 
 **1 — bridge:**
 ```bash
-ros2 run so101_bridge feetech_bridge_node --ros-args \
-  -p port:=/dev/ttyACM0 -p robot_id:=my_awesome_follower_arm -p max_relative_target_deg:=5.0
+python3 /so101_bridge/feetech_bridge_node.py
 ```
 
 **2 — robot_state_publisher:**
@@ -191,13 +190,6 @@ ros2 launch so_arm_100_moveit_config demo.launch.py
 `gripper_controller` also exists in `hardware_controllers.yaml`, unused
 until motor 6 is installed.
 
-## Validation order
-
-1. Bridge only, move arm by hand, check `/so101/hardware_states` direction per joint.
-2. One manual `ros2 topic pub --once /so101/hardware_commands ...`, confirm small correct motion.
-3. Full bring-up, RViz only — confirm displayed pose matches real arm.
-4. MoveIt plan+execute with `max_relative_target_deg` still small.
-5. Raise/disable clamp once trusted.
 
 ## Troubleshooting
 
@@ -210,14 +202,6 @@ until motor 6 is installed.
 | `name 'prefix' is not defined` (xacro) | `prefix` used but not declared as macro param | Add `prefix:=^|''` to `params=` |
 | `controller_manager` hangs on `Subscribing to '~/robot_description'` | Unquoted tilde remap, bash-expanded | Quote it: `'~/robot_description:=/robot_description'` |
 | `numpy.dtype size changed` / similar | apt package shadowing venv package | `pip install --upgrade --force-reinstall <pkg>` |
-
-## Safety
-
-- `max_relative_target_deg` — caps distance per command (wrong-destination protection).
-- `SERVO_GOAL_VELOCITY` — caps physical speed, servo-enforced (wrong-speed protection).
-  Keep both active during testing; they cover different failure modes.
-- One process may hold the serial port at a time — never run
-  `lerobot-calibrate`/`lerobot-teleoperate` while the bridge is running.
 
 ## Future Contributions
 
