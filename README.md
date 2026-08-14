@@ -184,9 +184,7 @@ ros2 run controller_manager ros2_control_node --ros-args \
 
 **4 — controllers + MoveIt:**
 ```bash
-ros2 run controller_manager spawner joint_state_broadcaster
-ros2 run controller_manager spawner arm_controller
-ros2 launch so_arm_100_moveit_config move_group.launch.py
+ros2 launch so_arm_100_moveit_config demo.launch.py
 ```
 `arm_controller` (`joint_trajectory_controller`) covers all 5 real joints —
 `Shoulder_Rotation, Shoulder_Pitch, Elbow, Wrist_Pitch, Wrist_Roll`.
