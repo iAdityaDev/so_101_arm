@@ -221,9 +221,9 @@ until motor 6 is installed.
 - One process may hold the serial port at a time — never run
   `lerobot-calibrate`/`lerobot-teleoperate` while the bridge is running.
 
-## Future work
+## Future Contributions
 
 - Native C++ Feetech serial driver, once this pipeline is fully trusted.
 - Add gripper (motor 6): uncomment in `so_follower.py`, recalibrate, add its
   `<joint>` block to the xacro. `feetech_bridge_node.py` needs no changes —
-  it iterates `self._robot.bus.motors` dynamically.
+  it iterates `self._robot.bus.motors` dynamically and setup gripper controller for same.
