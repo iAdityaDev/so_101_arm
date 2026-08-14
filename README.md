@@ -10,13 +10,14 @@ hardware.
 | `main` | MoveIt2 + MuJoCo simulation |
 | `so101_hardware` | Real hardware, via a lerobot-backed `ros2_control` bridge (this doc) |
 
-```bash
-git checkout so101_hardware   # for everything below this point
-```
 
 ### `main` — simulation
 
 ```bash
+mkdir -p so_100_ws/src && cd so_100_ws/src
+git clone
+cd ..
+colcon build --symlink-install
 ros2 launch so101_mujoco mujoco.launch.py
 ```
 Brings up MuJoCo, `robot_state_publisher`, `move_group`, RViz, and spawns
@@ -26,6 +27,11 @@ automatically — single command, nothing else to run.
 ---
 
 ## `so101_hardware` branch — real hardware bridge
+
+
+```bash
+git checkout so101_hardware   # for everything below this point
+```
 
 Drives the real arm through MoveIt2 by bridging `ros2_control` to
 [lerobot](https://github.com/huggingface/lerobot)'s `SO101Follower`, instead
