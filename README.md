@@ -69,13 +69,6 @@ MoveIt -> joint_trajectory_controller -> controller_manager
 | `so101_hardware` | `ament_cmake` (C++) | `SystemInterface` plugin. Topics only, no serial. |
 | `so101_bridge` | `ament_python` | Owns the serial connection via lerobot. |
 
-## Layout
-
-```
-so101_bridge/{package.xml,setup.py,setup.cfg,resource/so101_bridge,so101_bridge/feetech_bridge_node.py}
-so101_hardware/{CMakeLists.txt,package.xml,so101_hardware.xml,include/...,src/...}
-```
-
 URDF/xacro, MoveIt config, `controllers.yaml`, SRDF live in `so_arm_100_description`
 and `so_arm_100_moveit_config` (both present on every branch — only the
 `<ros2_control>` hardware plugin block differs between `main` and
@@ -140,25 +133,6 @@ No serial port/baud/speed params in the URDF — those live in the bridge
 node's launch params and constants below. Command-interface min/max should
 match the link URDF's real `<limit>` values.
 
-## Configuration
-
-**Launch parameters** (`feetech_bridge_node`):
-
-| Param | Default | Notes |
-|---|---|---|
-| `port` | `/dev/ttyACM0` | |
-| `robot_id` | `my_awesome_follower_arm` | must match `lerobot-calibrate --robot.id` |
-| `commands_topic` / `states_topic` | `/so101/hardware_commands` / `/so101/hardware_states` | must match URDF `<param>`s |
-| `publish_rate_hz` | `100.0` | |
-| `max_relative_target_deg` | `0.0` (off) | per-command safety clamp, degrees; set e.g. `5.0` until validated |
-| `joint_name_map` | 5-motor so_arm_100 mapping | `"lerobot_name:urdf_name"` entries |
-
-**Hardcoded constants** (edit `feetech_bridge_node.py`, rebuild):
-
-| Constant | Default | Notes |
-|---|---|---|
-| `SERVO_ACCELERATION` | `150` | Feetech `Acceleration` reg, 0-254. lerobot default: 254 |
-| `SERVO_GOAL_VELOCITY` | `250` | Feetech `Goal_Velocity` reg — hard speed cap, servo-enforced. `0` = unchanged. Actual speed-limiting mechanism; `max_relative_target_deg` is not this. |
 
 ## Launch (4 terminals, in order, all left running)
 
