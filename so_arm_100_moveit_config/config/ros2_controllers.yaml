@@ -6,8 +6,8 @@ controller_manager:
     arm_controller:
       type: joint_trajectory_controller/JointTrajectoryController
 
-    # gripper_controller:
-    #   type: joint_trajectory_controller/JointTrajectoryController
+    gripper_controller:
+      type: joint_trajectory_controller/JointTrajectoryController
 
     # arm_effort_controller:
     #   type: joint_trajectory_controller/JointTrajectoryController
@@ -38,17 +38,17 @@ arm_controller:
     allow_nonzero_velocity_at_trajectory_end: true
     allow_partial_joints_goal: true
 
-# gripper_controller:
-#   ros__parameters:
-#     joints: 
-#       - Gripper
-#     interface_name: position
-#     command_interfaces:
-#       - position
-#     state_interfaces:
-#       - position
-#       - velocity
-#     allow_nonzero_velocity_at_trajectory_end: true
+gripper_controller:
+  ros__parameters:
+    joints: 
+      - Gripper
+    interface_name: position
+    command_interfaces:
+      - position
+    state_interfaces:
+      - position
+      # - velocity
+    allow_nonzero_velocity_at_trajectory_end: true
 
 # arm_effort_controller:
 #   ros__parameters:
