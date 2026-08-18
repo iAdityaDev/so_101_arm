@@ -15,15 +15,13 @@ Topics:
     Subscribes  <commands_topic>  sensor_msgs/JointState   position in RADIANS
     Publishes   <states_topic>    sensor_msgs/JointState   position in RADIANS
 
-Messages are matched by joint `name`, not by array index, so the ordering used
-by your URDF/ros2_control does not need to match the ordering lerobot uses
-internally.
-
-Your URDF joint names very likely do NOT match lerobot's internal motor names
-(e.g. your URDF might use "Shoulder_Rotation" while lerobot calls that motor
-"shoulder_pan"). Rather than rename anything in your URDF/MoveIt/SRDF, set
-`joint_name_map` below to translate between the two -- the default already
-matches the standard so_arm_100 5-DOF naming convention.
+UNIT NOTE -- gripper is NOT degrees. Confirmed directly from lerobot's source
+(so_follower.py): the gripper motor is declared with MotorNormMode.RANGE_0_100,
+unlike the other five joints (which use DEGREES when use_degrees=True). So
+lerobot's "gripper.pos" value is a 0-100 percentage (0=closed, 100=open, or
+however your calibration defines it), not degrees. This node converts gripper
+separately, radians <-> 0-100 percent, using GRIPPER_URDF_RAD_MIN/MAX below --
+NOT the same math.degrees()/math.radians() path used for the other five joints.
 
 Parameters:
     port                     (string)  default: /dev/ttyACM0
@@ -32,21 +30,10 @@ Parameters:
     states_topic             (string)  default: /so101/hardware_states
     publish_rate_hz           (double)  default: 100.0
     max_relative_target_deg  (double)  default: 0.0  (0.0 = disabled)
-        If > 0, caps how far the arm is allowed to move per command relative to
-        its CURRENT position, in degrees. This is a per-cycle safety clamp --
-        strongly recommended while validating the pipeline for the first time,
-        e.g. start with 3-5 degrees so a bad MoveIt trajectory can't snap the
-        arm to a wrong position in one step.
+        Per-cycle safety clamp, degrees, relative to current position.
     joint_name_map           (string array)
-        Each entry is "lerobot_motor_name:urdf_joint_name". Any lerobot motor
-        not listed here is assumed to already share its name with the URDF.
-        Default maps the 5 motors you currently have to the so_arm_100 naming
-        convention (no gripper entry yet, since motor 6 isn't installed):
-            shoulder_pan  -> Shoulder_Rotation
-            shoulder_lift -> Shoulder_Pitch
-            elbow_flex    -> Elbow
-            wrist_flex    -> Wrist_Pitch
-            wrist_roll    -> Wrist_Roll
+        "lerobot_motor_name:urdf_joint_name" entries. Default maps all 6
+        motors to the so_arm_100 naming convention, including gripper.
 """
 
 import math
@@ -61,30 +48,32 @@ from lerobot.robots.so_follower.so_follower import SO101Follower
 
 # ============================================================
 # EDIT THESE DIRECTLY, then rebuild (colcon build) to apply.
-# No ROS2 parameters needed for these two -- just change the number and rebuild.
 # ============================================================
 
 # Feetech "Acceleration" register (0-254). Lower = gentler ramp up/down.
-# lerobot's own default is 254 (fast). Leave at 254 unless you also want a
-# slower ramp-up/ramp-down, separate from the top speed cap below.
 SERVO_ACCELERATION = 150
 
-# Feetech "Goal_Velocity" register -- a hard speed cap enforced by the servo
-# itself, regardless of where a command tells it to go. 0 = unlimited (leaves
-# whatever's currently set on the motor untouched). Start LOW (e.g. 30) and
-# increase gradually while watching the real arm move -- see the safety
-# calibration steps from earlier in this chat.
+# Feetech "Goal_Velocity" register -- hard speed cap, servo-enforced.
 SERVO_GOAL_VELOCITY = 250
 
+# Gripper's URDF joint range, in radians -- from so_arm_100_5dof_arm.urdf.xacro's
+# <joint name="${prefix}Gripper"> <limit lower="-0.1792" upper="1.5708" .../>.
+# Used ONLY to convert gripper's 0-100 percent <-> radians.
+GRIPPER_URDF_RAD_MIN = -0.1792
+GRIPPER_URDF_RAD_MAX = 1.5708
+
 # ============================================================
-# ===== FAKE JOINTS PATCH (START) =============================
-# Motors not physically installed/wired yet. Published as static 0.0 rad
-# in the states topic so downstream consumers (robot_state_publisher,
-# MoveIt, RViz, ros2_control state interfaces) don't choke on missing
-# joints. Delete this whole list (and its use in _on_timer, marked
-# below) once the real motors are connected and in `joint_name_map`.
-FAKE_JOINT_NAMES_URDF = ["Gripper"]
-# ===== FAKE JOINTS PATCH (END) ================================
+
+
+def _gripper_percent_to_rad(percent: float) -> float:
+    frac = max(0.0, min(100.0, percent)) / 100.0
+    return GRIPPER_URDF_RAD_MIN + frac * (GRIPPER_URDF_RAD_MAX - GRIPPER_URDF_RAD_MIN)
+
+
+def _gripper_rad_to_percent(rad: float) -> float:
+    span = GRIPPER_URDF_RAD_MAX - GRIPPER_URDF_RAD_MIN
+    frac = (rad - GRIPPER_URDF_RAD_MIN) / span if span != 0 else 0.0
+    return max(0.0, min(100.0, frac * 100.0))
 
 
 class FeetechBridgeNode(Node):
@@ -105,6 +94,7 @@ class FeetechBridgeNode(Node):
                 "elbow_flex:Elbow",
                 "wrist_flex:Wrist_Pitch",
                 "wrist_roll:Wrist_Roll",
+                "gripper:Gripper",
             ],
         )
 
@@ -131,9 +121,7 @@ class FeetechBridgeNode(Node):
         max_relative_target = max_rel_deg if max_rel_deg > 0.0 else None
         if max_relative_target is None:
             self.get_logger().warn(
-                "max_relative_target_deg=0.0 (disabled). Commands will be sent to the "
-                "arm with NO per-cycle safety clamp. Consider setting this to a small "
-                "value (e.g. 5.0) until you've fully validated the pipeline."
+                "max_relative_target_deg=0.0 (disabled). No per-cycle safety clamp active."
             )
 
         cfg = SO101FollowerConfig(
@@ -146,23 +134,15 @@ class FeetechBridgeNode(Node):
         self._robot = SO101Follower(cfg)
 
         self.get_logger().info(f"Connecting to SO-101 follower on '{port}' (id='{robot_id}')...")
-        # calibrate=False requires a calibration file for this id to already exist
-        # on disk. It never blocks on input() as long as is_calibrated is True,
-        # which is the state you're in after a successful lerobot-calibrate run.
         self._robot.connect(calibrate=False)
         motor_names = list(self._robot.bus.motors.keys())
         self.get_logger().info(f"Connected. Motors under control: {motor_names}")
 
-        # Acceleration: lerobot's own configure() already sets this to 254 (near-max)
-        # for every motor -- only re-write it if SERVO_ACCELERATION above is different.
         if SERVO_ACCELERATION != 254:
             for motor in motor_names:
                 self._robot.bus.write("Acceleration", motor, SERVO_ACCELERATION)
             self.get_logger().info(f"Set Acceleration={SERVO_ACCELERATION} on all motors.")
 
-        # Goal_Velocity: lerobot never writes this for arm joints, so it's whatever
-        # was last left on the motor (0 = "leave it alone"). Only applied if
-        # SERVO_GOAL_VELOCITY above is > 0.
         if SERVO_GOAL_VELOCITY > 0:
             for motor in motor_names:
                 self._robot.bus.write("Goal_Velocity", motor, SERVO_GOAL_VELOCITY)
@@ -201,7 +181,10 @@ class FeetechBridgeNode(Node):
                     f"a known motor {list(known_motors)}, skipping it."
                 )
                 continue
-            action[f"{lerobot_name}.pos"] = math.degrees(pos_rad)
+            if lerobot_name == "gripper":
+                action[f"{lerobot_name}.pos"] = _gripper_rad_to_percent(pos_rad)
+            else:
+                action[f"{lerobot_name}.pos"] = math.degrees(pos_rad)
 
         if not action:
             return
@@ -209,7 +192,7 @@ class FeetechBridgeNode(Node):
         with self._lock:
             try:
                 self._robot.send_action(action)
-            except Exception as exc:  # noqa: BLE001 - surface any hardware error, keep node alive
+            except Exception as exc:  # noqa: BLE001
                 self.get_logger().error(f"send_action failed: {exc}")
 
     def _on_timer(self) -> None:
@@ -222,21 +205,16 @@ class FeetechBridgeNode(Node):
 
         msg = JointState()
         msg.header.stamp = self.get_clock().now().to_msg()
-        for key, val_deg in obs.items():
+        for key, val in obs.items():
             if not key.endswith(".pos"):
                 continue
             lerobot_name = key.removesuffix(".pos")
             urdf_name = self._lerobot_to_urdf.get(lerobot_name, lerobot_name)
             msg.name.append(urdf_name)
-            msg.position.append(math.radians(val_deg))
-
-        # ===== FAKE JOINTS PATCH (START) =====
-        # Append static 0.0 rad entries for motors not yet installed.
-        # Delete this block to stop publishing them.
-        for fake_name in FAKE_JOINT_NAMES_URDF:
-            msg.name.append(fake_name)
-            msg.position.append(0.0)
-        # ===== FAKE JOINTS PATCH (END) =====
+            if lerobot_name == "gripper":
+                msg.position.append(_gripper_percent_to_rad(val))
+            else:
+                msg.position.append(math.radians(val))
 
         self._states_pub.publish(msg)
 
