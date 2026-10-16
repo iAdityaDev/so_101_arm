@@ -3,6 +3,7 @@
     <xacro:arg name="prefix" default="" />
     <xacro:arg name="initial_positions_file" default="initial_positions.yaml" />
     <xacro:arg name="use_fake_hardware" default="false"/>
+    <xacro:arg name="mujoco_model" default=""/>
     <xacro:arg name="serial_port" default="/dev/ttyUSB0"/>
     <xacro:arg name="serial_baudrate" default="1000000"/>
     <xacro:arg name="servo_speed" default="2400"/>
@@ -20,6 +21,7 @@
         name="SOARM100System" 
         initial_positions_file="$(arg initial_positions_file)"
         use_fake_hardware="$(arg use_fake_hardware)"
+        mujoco_model="$(arg mujoco_model)"
         serial_port="$(arg serial_port)"
         serial_baudrate="$(arg serial_baudrate)"
         servo_speed="$(arg servo_speed)"

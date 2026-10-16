@@ -7,6 +7,7 @@
   <xacro:arg name="use_fake_hardware" default="false" />
   <xacro:arg name="ros2_control_type" default="so_arm_100_5dof_position" />
   <xacro:arg name="ros2_controllers_file" default="" />
+  <xacro:arg name="mujoco_model" default="" />
 
   <!-- so_arm_100 -->
   <xacro:include filename="$(find so_arm_100_description)/urdf/so_arm_100_5dof_arm.urdf.xacro" />
@@ -40,6 +41,7 @@
     prefix="$(arg prefix)"
     use_sim="$(arg use_sim)"
     use_topic_hardware_interface="$(arg use_topic_hardware_interface)"
-    use_fake_hardware="$(arg use_fake_hardware)" />
+    use_fake_hardware="$(arg use_fake_hardware)"
+    mujoco_model="$(arg mujoco_model)" />
 
 </robot>

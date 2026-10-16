@@ -8,6 +8,7 @@
       use_sim:=^|false
       use_topic_hardware_interface:=^|false
       use_fake_hardware:=^|false
+      mujoco_model:=^|''
       serial_port:=^|/dev/ttyUSB0
       serial_baudrate:=^|1000000
       servo_speed:=^|2400
@@ -40,7 +41,7 @@
           <xacro:unless value="${use_topic_hardware_interface}">
             <!-- <plugin>gz_ros2_control/GazeboSimSystem</plugin> -->
             <plugin>mujoco_ros2_control/MujocoSystemInterface</plugin>
-            <param name="mujoco_model">/home/deviant/so101_moveit_ws/src/so101_mujoco/scene.xml</param>
+            <param name="mujoco_model">${mujoco_model}</param>
           </xacro:unless>
         </xacro:if>
         <xacro:unless value="${use_sim}">

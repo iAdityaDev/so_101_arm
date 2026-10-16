@@ -174,6 +174,7 @@ until motor 6 is installed.
 | `Bridge node never reported a position for joint 'X'` | Joint name not in `joint_name_map` | Fix the mapping |
 | `name 'prefix' is not defined` (xacro) | `prefix` used but not declared as macro param | Add `prefix:=^|''` to `params=` |
 | `controller_manager` hangs on `Subscribing to '~/robot_description'` | Unquoted tilde remap, bash-expanded | Quote it: `'~/robot_description:=/robot_description'` |
+| `controller_manager` says it is waiting for `robot_description` after receiving it | MuJoCo hardware initialization failed because the model path in the URDF is invalid | Rebuild after updating; the launch now passes the installed scene path and installs the scene assets |
 | `numpy.dtype size changed` / similar | apt package shadowing venv package | `pip install --upgrade --force-reinstall <pkg>` |
 
 ## Future Contributions

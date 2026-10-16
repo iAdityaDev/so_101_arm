@@ -11,7 +11,11 @@ find_package(ament_cmake REQUIRED)
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
 
-install(DIRECTORY launch 
+install(DIRECTORY launch assets
+  DESTINATION share/${PROJECT_NAME}
+)
+
+install(FILES scene.xml so_arm100.xml
   DESTINATION share/${PROJECT_NAME}
 )
 

@@ -59,6 +59,8 @@ def generate_launch_description():
                 " use_topic_hardware_interface:=false",
                 " initial_positions_file:=",
                 initial_positions_file,
+                " mujoco_model:=",
+                mcjf_file,
             ]
         ),
         value_type=str,
@@ -85,7 +87,7 @@ def generate_launch_description():
         package="mujoco_ros2_control",
         executable="ros2_control_node",
         output="screen",
-        parameters=[mcjf_file, controllers_yaml],
+        parameters=[controllers_yaml],
         remappings=[
             ("/controller_manager/robot_description", "/robot_description"),
         ],
